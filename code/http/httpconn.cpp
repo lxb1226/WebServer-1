@@ -34,7 +34,7 @@ void HttpConn::init(int fd, const sockaddr_in& addr) {
 void HttpConn::Close() {
     response_.UnmapFile();
     if(isClose_ == false){
-        isClose_ = true; 
+        isClose_ = true;
         userCount--;
         close(fd_);
         LOG_INFO("Client[%d](%s:%d) quit, UserCount:%d", fd_, GetIP(), GetPort(), (int)userCount);
@@ -57,6 +57,7 @@ int HttpConn::GetPort() const {
     return addr_.sin_port;
 }
 
+// read操作
 ssize_t HttpConn::read(int* saveErrno) {
     ssize_t len = -1;
     do {
@@ -68,6 +69,7 @@ ssize_t HttpConn::read(int* saveErrno) {
     return len;
 }
 
+// 写操作 利用分散写
 ssize_t HttpConn::write(int* saveErrno) {
     ssize_t len = -1;
     do {

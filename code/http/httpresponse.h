@@ -45,9 +45,9 @@ private:
     char* mmFile_; 
     struct stat mmFileStat_;
 
-    static const std::unordered_map<std::string, std::string> SUFFIX_TYPE;
-    static const std::unordered_map<int, std::string> CODE_STATUS;
-    static const std::unordered_map<int, std::string> CODE_PATH;
+    static const std::unordered_map<std::string, std::string> SUFFIX_TYPE;  // 后缀类型
+    static const std::unordered_map<int, std::string> CODE_STATUS;  // 状态码对应回应
+    static const std::unordered_map<int, std::string> CODE_PATH;    // 状态码对应路径
 };
 
 

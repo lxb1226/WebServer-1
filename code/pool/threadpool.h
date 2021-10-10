@@ -20,6 +20,7 @@ public:
                 std::thread([pool = pool_] {
                     std::unique_lock<std::mutex> locker(pool->mtx);
                     while(true) {
+                        // 如果线程池中的任务不为空，则取出一个任务，然后执行
                         if(!pool->tasks.empty()) {
                             auto task = std::move(pool->tasks.front());
                             pool->tasks.pop();
@@ -48,6 +49,7 @@ public:
         }
     }
 
+    // 增加一个任务
     template<class F>
     void AddTask(F&& task) {
         {
