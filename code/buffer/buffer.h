@@ -65,7 +65,7 @@ public:
 private:
     char *BeginPtr_();
 
-    const char *BeginPtr_() const;
+    const char *BeginPtr_() const;  // 返回一个常量指针
 
     void MakeSpace_(size_t len);
 

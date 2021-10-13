@@ -50,7 +50,7 @@ private:
     size_t capacity_;
 
     std::mutex mtx_;
-
+    // TODO：这样设计耦合性太强了
     bool isClose_;
 
     std::condition_variable condConsumer_;
@@ -118,6 +118,10 @@ size_t BlockDeque<T>::capacity() {
 
 template<class T>
 void BlockDeque<T>::push_back(const T &item) {
+    /**
+     * C++11中的unique_lock使用起来要比lock_guard更灵活，但是效率会第一点，内存的占用也会大一点。
+     * 同样，unique_lock也是一个类模板，但是比起lock_guard，它有自己的成员函数来更加灵活进行锁的操作。
+     */
     std::unique_lock<std::mutex> locker(mtx_);
     while(deq_.size() >= capacity_) {
         condProducer_.wait(locker);

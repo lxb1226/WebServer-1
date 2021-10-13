@@ -2,7 +2,7 @@
  * @Author       : mark
  * @Date         : 2020-06-16
  * @copyleft Apache 2.0
- */ 
+ */
 #ifndef LOG_H
 #define LOG_H
 
@@ -19,24 +19,36 @@
 
 class Log {
 public:
-    void init(int level, const char* path = "./log", 
-                const char* suffix =".log",
-                int maxQueueCapacity = 1024);
+    void init(int level, const char *path = "./log",
+              const char *suffix = ".log",
+              int maxQueueCapacity = 1024);
 
-    static Log* Instance();
+    // 单例模式
+    static Log *Instance();
+
+    // 异步刷新线程执行函数
     static void FlushLogThread();
 
-    void write(int level, const char *format,...);
+    // 写日志
+    void write(int level, const char *format, ...);
+
+    // 刷新日志
     void flush();
 
     int GetLevel();
+
     void SetLevel(int level);
+
     bool IsOpen() { return isOpen_; }
-    
+
 private:
     Log();
+
+    // 添加日志等级title
     void AppendLogLevelTitle_(int level);
+
     virtual ~Log();
+
     void AsyncWrite_();
 
 private:
@@ -44,26 +56,27 @@ private:
     static const int LOG_NAME_LEN = 256;
     static const int MAX_LINES = 50000;
 
-    const char* path_;
-    const char* suffix_;
+    const char *path_;  // 日志文件路径
+    const char *suffix_;    // 日志文件后缀
 
-    int MAX_LINES_;
+    int MAX_LINES_;     // 最大行数
 
-    int lineCount_;
-    int toDay_;
+    int lineCount_;     // 当前行数
+    int toDay_;         // 当前日期
 
     bool isOpen_;
- 
-    Buffer buff_;
-    int level_;
-    bool isAsync_;
 
-    FILE* fp_;
-    std::unique_ptr<BlockDeque<std::string>> deque_; 
-    std::unique_ptr<std::thread> writeThread_;
+    Buffer buff_;   // 缓冲区
+    int level_;     // 当前日志输出等级
+    bool isAsync_;  // 是否开启异步写
+
+    FILE *fp_;      // 日志文件描述符
+    std::unique_ptr <BlockDeque<std::string>> deque_;   // 队列
+    std::unique_ptr <std::thread> writeThread_;     // 异步写线程
     std::mutex mtx_;
 };
 
+// 宏
 #define LOG_BASE(level, format, ...) \
     do {\
         Log* log = Log::Instance();\
