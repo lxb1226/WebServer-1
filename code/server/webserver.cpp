@@ -90,7 +90,7 @@ void WebServer::Start() {
             if (fd == listenFd_) {
                 DealListen_();
             } else if (events & (EPOLLRDHUP | EPOLLHUP | EPOLLERR)) {
-                // 关闭连接事件
+                // 关闭连接事件 TODO:这几个参数都代表什么意思
                 assert(users_.count(fd) > 0);
                 CloseConn_(&users_[fd]);
             } else if (events & EPOLLIN) {

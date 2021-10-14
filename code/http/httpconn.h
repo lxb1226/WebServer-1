@@ -57,12 +57,12 @@ public:
     
 private:
    
-    int fd_;
-    struct  sockaddr_in addr_;
+    int fd_;    // http连接对应的fd
+    struct  sockaddr_in addr_;  // 网络地址
 
-    bool isClose_;
+    bool isClose_;  // 是否关闭
     
-    int iovCnt_;
+    int iovCnt_;    // 用于分散写以及分散读
     struct iovec iov_[2];
     
     Buffer readBuff_; // 读缓冲区
