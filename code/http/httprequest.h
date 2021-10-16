@@ -28,6 +28,7 @@ public:
         FINISH,
     };
 
+    // http 状态码
     enum HTTP_CODE {
         NO_REQUEST = 0,
         GET_REQUEST,
@@ -45,6 +46,7 @@ public:
 
     void Init();
 
+    // 解析request
     bool parse(Buffer &buff);
 
     std::string path() const;

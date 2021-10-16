@@ -7,14 +7,17 @@
 
 using namespace std;
 
+// 默认的html页面
 const unordered_set <string> HttpRequest::DEFAULT_HTML{
         "/index", "/register", "/login",
         "/welcome", "/video", "/picture",};
 
+// 默认的html页面对应的值
 const unordered_map<string, int> HttpRequest::DEFAULT_HTML_TAG{
         {"/register.html", 0},
         {"/login.html",    1},};
 
+// 初始化
 void HttpRequest::Init() {
     method_ = path_ = version_ = body_ = "";
     state_ = REQUEST_LINE;
@@ -22,6 +25,7 @@ void HttpRequest::Init() {
     post_.clear();
 }
 
+// 判断是否保持初始化
 bool HttpRequest::IsKeepAlive() const {
     if (header_.count("Connection") == 1) {
         return header_.find("Connection")->second == "keep-alive" && version_ == "1.1";
@@ -29,14 +33,14 @@ bool HttpRequest::IsKeepAlive() const {
     return false;
 }
 
-// 解析http请求
+// 解析http请求 使用有限状态机 请求行->请求头->请求体
 bool HttpRequest::parse(Buffer &buff) {
     const char CRLF[] = "\r\n";
     if (buff.ReadableBytes() <= 0) {
         return false;
     }
     while (buff.ReadableBytes() && state_ != FINISH) {
-        // 在buff中找到\r\n
+        // 在buff中找到\r\n 即找到一行的末尾
         const char *lineEnd = search(buff.Peek(), buff.BeginWriteConst(), CRLF, CRLF + 2);
         std::string line(buff.Peek(), lineEnd);
         switch (state_) {
@@ -62,6 +66,7 @@ bool HttpRequest::parse(Buffer &buff) {
             default:
                 break;
         }
+        // TODO：
         if (lineEnd == buff.BeginWrite()) { break; }
         buff.RetrieveUntil(lineEnd + 2);
     }
@@ -74,6 +79,7 @@ void HttpRequest::ParsePath_() {
     if (path_ == "/") {
         path_ = "/index.html";
     } else {
+        // 匹配对应的html页面
         for (auto &item: DEFAULT_HTML) {
             if (item == path_) {
                 path_ += ".html";
@@ -84,6 +90,11 @@ void HttpRequest::ParsePath_() {
 }
 
 // 解析请求行
+/**
+ * 请求行例子：GET  /index.htm  HTTP/1.1 请求方法 路径 HTTP版本号
+ * @param line
+ * @return
+ */
 bool HttpRequest::ParseRequestLine_(const string &line) {
     regex patten("^([^ ]*) ([^ ]*) HTTP/([^ ]*)$");
     smatch subMatch;
@@ -99,7 +110,7 @@ bool HttpRequest::ParseRequestLine_(const string &line) {
     return false;
 }
 
-// 解析头部信息
+// 解析请求头
 void HttpRequest::ParseHeader_(const string &line) {
     regex patten("^([^:]*): ?(.*)$");
     smatch subMatch;
@@ -110,7 +121,7 @@ void HttpRequest::ParseHeader_(const string &line) {
     }
 }
 
-// 解析body
+// 解析请求体
 void HttpRequest::ParseBody_(const string &line) {
     body_ = line;
     ParsePost_();

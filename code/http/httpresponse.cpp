@@ -99,7 +99,7 @@ void HttpResponse::ErrorHtml_() {
     }
 }
 
-// 增加状态行
+// 增加响应行
 void HttpResponse::AddStateLine_(Buffer &buff) {
     string status;
     if (CODE_STATUS.count(code_) == 1) {
@@ -111,7 +111,7 @@ void HttpResponse::AddStateLine_(Buffer &buff) {
     buff.Append("HTTP/1.1 " + to_string(code_) + " " + status + "\r\n");
 }
 
-// 添加响应行
+// 添加响应头
 void HttpResponse::AddHeader_(Buffer &buff) {
     buff.Append("Connection: ");
     if (isKeepAlive_) {
@@ -123,7 +123,7 @@ void HttpResponse::AddHeader_(Buffer &buff) {
     buff.Append("Content-type: " + GetFileType_() + "\r\n");
 }
 
-// 添加响应内容
+// 添加响应体
 void HttpResponse::AddContent_(Buffer &buff) {
     int srcFd = open((srcDir_ + path_).data(), O_RDONLY);
     if (srcFd < 0) {
